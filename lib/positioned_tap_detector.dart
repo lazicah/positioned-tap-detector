@@ -75,11 +75,11 @@ class _TapPositionDetectorState extends State<PositionedTapDetector> {
         PositionedTapDetector._DOUBLE_TAP_MAX_OFFSET;
   }
 
-  void _onTapDown(TapDownDetails details) {
+  void _onTapDownEvent(TapDownDetails details) {
     _pendingTap = details;
   }
 
-  void _onTap() {
+  void _onTapEvent() {
     if (widget.onDoubleTap == null) {
       _postCallback(_pendingTap, widget.onTap);
     } else {
@@ -88,7 +88,7 @@ class _TapPositionDetectorState extends State<PositionedTapDetector> {
     _pendingTap = null;
   }
 
-  void _onLongPress() {
+  void _onLongPressEvent() {
     if (_firstTap == null) {
       _postCallback(_pendingTap, widget.onLongPress);
     } else {
@@ -100,7 +100,9 @@ class _TapPositionDetectorState extends State<PositionedTapDetector> {
   void _postCallback(
       TapDownDetails details, TapPositionCallback callback) async {
     _firstTap = null;
-    callback(_getTapPositions(details));
+    if (callback != null) {
+      callback(_getTapPositions(details));
+    }
   }
 
   TapPosition _getTapPositions(TapDownDetails details) {
@@ -126,9 +128,9 @@ class _TapPositionDetectorState extends State<PositionedTapDetector> {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: widget.child,
-      onTap: _onTap,
-      onLongPress: _onLongPress,
-      onTapDown: _onTapDown,
+      onTap: _onTapEvent,
+      onLongPress: _onLongPressEvent,
+      onTapDown: _onTapDownEvent,
     );
   }
 }
