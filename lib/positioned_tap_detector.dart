@@ -11,6 +11,7 @@ class PositionedTapDetector extends StatefulWidget {
     this.onDoubleTap,
     this.onLongPress,
     this.doubleTapDelay: _DEFAULT_DELAY,
+    this.controller,
   }) : super(key: key);
 
   static const _DEFAULT_DELAY = Duration(milliseconds: 250);
@@ -21,6 +22,7 @@ class PositionedTapDetector extends StatefulWidget {
   final TapPositionCallback onDoubleTap;
   final TapPositionCallback onLongPress;
   final Duration doubleTapDelay;
+  final PositionedTapController controller;
 
   @override
   _TapPositionDetectorState createState() => _TapPositionDetectorState();
@@ -126,6 +128,7 @@ class _TapPositionDetectorState extends State<PositionedTapDetector> {
 
   @override
   Widget build(BuildContext context) {
+    widget.controller?._init(this);
     return GestureDetector(
       child: widget.child,
       onTap: _onTapEvent,
@@ -151,4 +154,17 @@ class TapPosition {
 
   @override
   int get hashCode => hashValues(global, relative);
+}
+
+class PositionedTapController {
+
+  _TapPositionDetectorState _state;
+
+  void onTap() => _state?._onTapEvent();
+
+  void onLongPress() => _state?._onLongPressEvent();
+
+  void onTapDown(TapDownDetails details) => _state?._onTapDownEvent(details);
+
+  void _init(_TapPositionDetectorState state) => _state = state;
 }
