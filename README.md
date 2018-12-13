@@ -35,6 +35,7 @@ Widget build(BuildContext context) {
         onTap: _handleTap,
         onTapDown: _controller.onTapDown,
         onLongPress: _controller.onLongPress,
+        behavior: ...,
         child: ...,
       ),
     ),
