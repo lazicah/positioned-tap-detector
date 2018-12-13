@@ -11,6 +11,7 @@ class PositionedTapDetector extends StatefulWidget {
     this.onDoubleTap,
     this.onLongPress,
     this.doubleTapDelay: _DEFAULT_DELAY,
+    this.behavior,
     this.controller,
   }) : super(key: key);
 
@@ -18,6 +19,7 @@ class PositionedTapDetector extends StatefulWidget {
   static const _DOUBLE_TAP_MAX_OFFSET = 48.0;
 
   final Widget child;
+  final HitTestBehavior behavior;
   final TapPositionCallback onTap;
   final TapPositionCallback onDoubleTap;
   final TapPositionCallback onLongPress;
@@ -131,6 +133,10 @@ class _TapPositionDetectorState extends State<PositionedTapDetector> {
     widget.controller?._init(this);
     return GestureDetector(
       child: widget.child,
+      behavior: (widget.behavior ??
+          (widget.child == null
+              ? HitTestBehavior.translucent
+              : HitTestBehavior.deferToChild)),
       onTap: _onTapEvent,
       onLongPress: _onLongPressEvent,
       onTapDown: _onTapDownEvent,
@@ -157,7 +163,6 @@ class TapPosition {
 }
 
 class PositionedTapController {
-
   _TapPositionDetectorState _state;
 
   void onTap() => _state?._onTapEvent();
