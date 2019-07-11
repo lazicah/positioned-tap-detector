@@ -35,16 +35,34 @@ class _TapPositionDetectorState extends State<PositionedTapDetector> {
   Stream<TapDownDetails> get _stream => _controller.stream;
   Sink<TapDownDetails> get _sink => _controller.sink;
 
+  PositionedTapController _tapController;
   TapDownDetails _pendingTap;
   TapDownDetails _firstTap;
 
   @override
   void initState() {
+    _updateController();
     _stream
         .timeout(widget.doubleTapDelay)
-        .handleError(_onTimeout, test: _isTimeoutError)
+        .handleError(_onTimeout, test: (e) => e is TimeoutException)
         .listen(_onTapConfirmed);
     super.initState();
+  }
+
+  @override
+  void didUpdateWidget(PositionedTapDetector oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.controller != oldWidget.controller) {
+      _updateController();
+    }
+  }
+
+  void _updateController() {
+    _tapController?._state = null;
+    if (widget.controller != null) {
+      widget.controller._state = this;
+      _tapController = widget.controller;
+    }
   }
 
   void _onTimeout(dynamic error) {
@@ -52,8 +70,6 @@ class _TapPositionDetectorState extends State<PositionedTapDetector> {
       _postCallback(_firstTap, widget.onTap);
     }
   }
-
-  bool _isTimeoutError(dynamic error) => error is TimeoutException;
 
   void _onTapConfirmed(TapDownDetails details) {
     if (_firstTap == null) {
@@ -125,12 +141,13 @@ class _TapPositionDetectorState extends State<PositionedTapDetector> {
   @override
   void dispose() {
     _controller.close();
+    _tapController?._state = null;
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    widget.controller?._init(this);
+    if (widget.controller != null) return widget.child;
     return GestureDetector(
       child: widget.child,
       behavior: (widget.behavior ??
@@ -170,6 +187,4 @@ class PositionedTapController {
   void onLongPress() => _state?._onLongPressEvent();
 
   void onTapDown(TapDownDetails details) => _state?._onTapDownEvent(details);
-
-  void _init(_TapPositionDetectorState state) => _state = state;
 }
