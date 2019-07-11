@@ -1,3 +1,8 @@
+## [1.0.3] - 11/07/2019
+
+- Tap controller internal improvements
+- Tap controller bug fix
+
 ## [1.0.2] - 14/12/2018
 
 - Add HitTestBehavior field
