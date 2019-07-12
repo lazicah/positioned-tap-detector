@@ -47,6 +47,8 @@ void _handleTap() {
 }
 ```
 
+**Note:** always remember to pass `onTapDown` callback to `PositionedTapController`
+
 ### Drawbacks
 
 `PositionedTapDetector` will not invoke *onDoubleTap* callback in case there's `GestureDetector` underneath it in the widget tree **that also specifies *onDoubleTap* parameter**. Since Flutter framework doesn't invoke its `onTapDown` callback when detector is double-tapped, *positioned detector* is unable to receive tap positions and therefore detect double-tap gestures.
