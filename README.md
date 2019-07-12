@@ -47,7 +47,7 @@ void _handleTap() {
 }
 ```
 
-**Note:** always remember to pass `onTapDown` callback to `PositionedTapController`
+**Note:** always remember to pass `onTapDown` callback to `PositionedTapController`.
 
 ### Drawbacks
 
