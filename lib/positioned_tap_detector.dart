@@ -20,9 +20,9 @@ class PositionedTapDetector extends StatefulWidget {
 
   final Widget child;
   final HitTestBehavior behavior;
-  final TapPositionCallback onTap;
-  final TapPositionCallback onDoubleTap;
-  final TapPositionCallback onLongPress;
+  final ValueChanged<TapPosition> onTap;
+  final ValueChanged<TapPosition> onDoubleTap;
+  final ValueChanged<TapPosition> onLongPress;
   final Duration doubleTapDelay;
   final PositionedTapController controller;
 
@@ -118,7 +118,7 @@ class _TapPositionDetectorState extends State<PositionedTapDetector> {
   }
 
   void _postCallback(
-      TapDownDetails details, TapPositionCallback callback) async {
+      TapDownDetails details, ValueChanged<TapPosition> callback) {
     _firstTap = null;
     if (callback != null) {
       callback(_getTapPositions(details));
@@ -128,8 +128,8 @@ class _TapPositionDetectorState extends State<PositionedTapDetector> {
   TapPosition _getTapPositions(TapDownDetails details) {
     final topLeft = _getWidgetTopLeft();
     final global = details.globalPosition;
-    final relative = topLeft != null ? global - topLeft : null;
-    return TapPosition(global, relative);
+    final local = topLeft != null ? global - topLeft : null;
+    return TapPosition(global, local);
   }
 
   Offset _getWidgetTopLeft() {
@@ -150,10 +150,7 @@ class _TapPositionDetectorState extends State<PositionedTapDetector> {
     if (widget.controller != null) return widget.child;
     return GestureDetector(
       child: widget.child,
-      behavior: (widget.behavior ??
-          (widget.child == null
-              ? HitTestBehavior.translucent
-              : HitTestBehavior.deferToChild)),
+      behavior: widget.behavior,
       onTap: _onTapEvent,
       onLongPress: _onLongPressEvent,
       onTapDown: _onTapDownEvent,
@@ -161,22 +158,24 @@ class _TapPositionDetectorState extends State<PositionedTapDetector> {
   }
 }
 
-typedef TapPositionCallback(TapPosition position);
-
 class TapPosition {
-  TapPosition(this.global, this.relative);
-  Offset global;
-  Offset relative;
+  const TapPosition(this.global, this.local);
+
+  final Offset global;
+  final Offset local;
 
   @override
   bool operator ==(dynamic other) {
     if (other is! TapPosition) return false;
     final TapPosition typedOther = other;
-    return global == typedOther.global && relative == other.relative;
+    return global == typedOther.global && local == other.local;
   }
 
   @override
-  int get hashCode => hashValues(global, relative);
+  int get hashCode => hashValues(global, local);
+
+  @override
+  String toString() => "TapPosition(global: $global, local: $local)";
 }
 
 class PositionedTapController {

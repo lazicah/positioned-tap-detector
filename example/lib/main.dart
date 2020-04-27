@@ -35,7 +35,7 @@ class MyAppState extends State<MyApp> {
                 padding: EdgeInsets.only(top: 16.0),
                 child: Text("Gesture: $_gesture\n"
                     "Global: ${_formatOffset(_position.global)}\n"
-                    "Relative: ${_formatOffset(_position.relative)}"),
+                    "Local: ${_formatOffset(_position.local)}"),
               ),
             ],
           ),
