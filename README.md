@@ -51,4 +51,25 @@ void _handleTap() {
 
 ### Drawbacks
 
+**Custom GestureDetector**
+
 `PositionedTapDetector` will not invoke *onDoubleTap* callback in case there's `GestureDetector` underneath it in the widget tree **that also specifies *onDoubleTap* parameter**. Since Flutter framework doesn't invoke its `onTapDown` callback when detector is double-tapped, *positioned detector* is unable to receive tap positions and therefore detect double-tap gestures.
+
+
+**Using with `TextField`**
+
+`TextField` makes it a bit tricky to catch tap events, here is what the documentation says:
+
+> Handling some of those events by wrapping the text field with a competing GestureDetector is problematic.
+
+To make it work, it is necessary to wrap `TextField` with `AbsorbPointer` (so that tap events are properly delivered to `PositionedTapDetector`) but then you need to remember to request focus on the text input manually in order to activate it:
+
+```Dart
+PositionedTapDetector(
+  onTap: _onTapPosition,
+  onLongPress: (_) => _focusNode.requestFocus(),
+  child: AbsorbPointer(
+    child: TextField(focusNode: _focusNode),
+  ),
+)
+```
